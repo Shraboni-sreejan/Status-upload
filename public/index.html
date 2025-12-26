@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WhatsApp Song Sender</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+        .container{max-width:400px;width:100%;background:white;border-radius:20px;box-shadow:0 20px 40px rgba(0,0,0,0.1);overflow:hidden}
+        .header{background:#25D366;color:white;padding:30px 20px;text-align:center}
+        .header h1{font-size:24px;margin:0}
+        .form{padding:30px 20px}
+        input{width:100%;padding:15px;border:2px solid #e1e5e9;border-radius:12px;font-size:16px;margin-bottom:15px;transition:all 0.3s}
+        input:focus{outline:none;border-color:#25D366;box-shadow:0 0 0 3px rgba(37,211,102,0.1)}
+        button{width:100%;padding:15px;background:#25D366;color:white;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s}
+        button:hover{background:#1ebe5a}
+        button:active{transform:scale(0.98)}
+        .result{display:none;padding:25px;background:#e8f5e8;border-radius:12px;margin-top:20px;text-align:center}
+        .result.show{display:block}
+        .pair-code{font-size:28px;font-weight:bold;color:#25D366;margin:10px 0}
+        .steps{background:white;padding:20px;border-radius:12px;margin:20px 0;text-align:left}
+        .steps ol{list-style-position:inside;padding-left:20px}
+        .steps li{margin:10px 0;font-size:14px}
+        .footer{font-size:12px;color:#666;text-align:center;padding:20px}
+        @media(max-width:480px){.container{margin:10px;border-radius:15px}}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎵 WhatsApp Song Sender</h1>
+            <p>গান পাঠান সহজে</p>
+        </div>
+        
+        <form class="form" id="songForm">
+            <input type="tel" id="number" placeholder="WhatsApp নম্বর (+88017XXXXXXXXX)" required>
+            <input type="url" id="mp3Link" placeholder="Direct MP3 Link (Dropbox/SoundCloud)" required>
+            <button type="submit">Pair Code পাওয়ার জন্য ক্লিক করুন</button>
+        </form>
+        
+        <div id="result" class="result">
+            <div class="pair-code" id="pairCode"></div>
+            <div class="steps">
+                <strong>📱 এখন করুন:</strong>
+                <ol>
+                    <li>WhatsApp খুলুন → Settings ⚙️</li>
+                    <li>Linked Devices → Link a Device</li>
+                    <li>"Enter Pairing Code" → <span id="codeDisplay"></span> লিখুন</li>
+                    <li>Link → গান আসবে! 🎵</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="footer">
+            Powered by <strong>rabbitsmm.store</strong> | SMM Services
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('songForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const number = document.getElementById('number').value;
+            const mp3Link = document.getElementById('mp3Link').value;
+            const submitBtn = e.target.querySelector('button');
+            
+            submitBtn.textContent = 'Generating...';
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/send-song', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ number, mp3Link })
+                });
+                
+                const data = await response.json();
+                
+                document.getElementById('pairCode').textContent = data.pairCode;
+                document.getElementById('codeDisplay').textContent = data.pairCode;
+                document.getElementById('result').classList.add('show');
+                
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+            
+            submitBtn.textContent = 'Pair Code পাওয়ার জন্য ক্লিক করুন';
+            submitBtn.disabled = false;
+        });
+    </script>
+</body>
+</html>
